@@ -1,5 +1,6 @@
 import pytesseract
 import cv2
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 class OCRRecognizer:
     def __init__(self):
@@ -53,6 +54,7 @@ if __name__ == "__main__":
     from image_loader import ImageLoader
     loader = ImageLoader()
     img = loader.load_image('./temptest/forTesseract.png')
+    
 
     # TesseractでOCRを実行
     text = pytesseract.image_to_string(img, lang='jpn')
