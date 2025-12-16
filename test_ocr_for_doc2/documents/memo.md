@@ -3,9 +3,9 @@
 - [x] ライブラリのインストール
 - [x] macで開発したコードを移植して，動くかどうかを確認すること
   - [x] tesseract (test for1) confirmation
-- [ ] test for 2 construction
-  - [ ] まず環境構築する．
-  - [ ] ローカルで動作することを確認する
+- [X] ~~*test for 2 construction*~~ [2025-12-16]
+  - [X] ~~*まず環境構築する．*~~ [2025-12-16]
+  - [ ] 構成の整理
   - [ ] 
 
 ---
