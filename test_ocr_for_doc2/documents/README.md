@@ -1,10 +1,16 @@
-# Test OCR for Doc2 - Google Vision APIシステム
+# Test OCR for Doc2
 
 Google Cloud Vision APIを活用した高精度帳票OCRシステムの実装です。クラウドベースのAI OCRエンジンを使用して、高品質な文字認識を実現します。
 
-## 概要
+## 考え方・設計指針
 
-本システムはGoogle Vision APIの`DOCUMENT_TEXT_DETECTION`機能を使用して、帳票画像から高精度でテキスト抽出を行います。Tesseractで困難な複雑なレイアウトや低品質画像にも対応可能です。
+このテストは、Google Cloud Vision OCR（`DOCUMENT_TEXT_DETECTION`）を用いて、文書画像から高精度にテキストを抽出できるかを検証します。
+
+設計上の狙いは以下です。
+
+- 低品質なスキャンや複雑なレイアウトでも、精度と頑健性を優先する
+- まずはページ単位で「全文テキスト」を確実に取得し、構造化（項目抽出）は必要に応じて後段で行う
+- 認証情報の扱いを集中管理し、キーファイルをリポジトリにコミットしない
 
 ## 処理フロー
 
