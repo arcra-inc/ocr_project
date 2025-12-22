@@ -1,0 +1,41 @@
+@startuml Google_Vision_System_Architecture
+!theme plain
+skinparam backgroundColor white
+skinparam componentStyle rectangle
+
+package "Google Vision OCR System" {
+  [main.py] as Main
+  [declare_key.py] as KeyManager
+}
+
+database "Input" {
+  [PDF Pages Images] as InputImages
+}
+
+database "Output" {
+  [Text Files] as OutputFiles
+}
+
+cloud "Google Cloud Services" {
+  [Vision API] as VisionAPI
+  [Service Account] as ServiceAccount
+}
+
+storage "Local Storage" {
+  [API Key JSON] as APIKey
+}
+
+InputImages --> Main : "Batch Processing"
+Main --> KeyManager : "get_client()"
+KeyManager --> APIKey : "load credentials"
+KeyManager --> ServiceAccount : "authenticate"
+ServiceAccount --> VisionAPI : "API calls"
+Main --> VisionAPI : "DOCUMENT_TEXT_DETECTION"
+VisionAPI --> Main : "OCR results"
+Main --> OutputFiles : "UTF-8 text files"
+
+note right of Main : "Natural sorting\nBatch processing\nError handling\nProgress tracking"
+note right of VisionAPI : "High accuracy OCR\nDocument structure analysis\nMulti-language support\nCloud-based processing"
+note right of KeyManager : "Centralized key management\nSecurity handling\nAPI client initialization"
+
+@enduml
