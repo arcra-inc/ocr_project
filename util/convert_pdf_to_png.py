@@ -5,7 +5,8 @@ pdf_path = Path(r"C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr
 output_dir = Path(r"C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc2\documents\images")
 output_dir.mkdir(parents=True, exist_ok=True)
 
-POPPLER_BIN = r"C:\Users\NakanoShiryu\Downloads\Release-25.12.0-0\poppler-25.12.0\Library\bin" # ←あなたの環境に合わせて変更
+
+POPPLER_BIN = r"C:\Users\NakanoShiryu\Downloads\Release-25.12.0-0\poppler-25.12.0\Library\bin" # ←環境に合わせて変更
 
 images = convert_from_path(
     pdf_path,

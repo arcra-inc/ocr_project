@@ -6,7 +6,7 @@ from typing import List
 
 from google.cloud import vision
 
-from declare_key import call_for_client
+from lib.declare_key import call_for_client
 
 
 def natural_key(path: Path):

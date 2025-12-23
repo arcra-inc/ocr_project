@@ -1,10 +1,10 @@
 import os
 import json
-from image_loader import ImageLoader
-from preprocess import Preprocessor
-from ocr_recognizer import OCRRecognizer
-from data_parser import DataParser
-from output_writer import OutputWriter
+from lib.image_loader import ImageLoader
+from lib.preprocess import Preprocessor
+from lib.ocr_recognizer import OCRRecognizer
+from lib.data_parser import DataParser
+from lib.output_writer import OutputWriter
 
 def main(image_path):
     """
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # そのパスを指定してください。
     
     # 例:
-    # sample_image_path = os.path.join(os.path.dirname(__file__), 'documents', 'images', 'sample_invoice.png')
-    # main(sample_image_path)
+    sample_image_path = os.path.join(os.path.dirname(__file__), 'documents', 'images', 'sample.png')
+    main(sample_image_path)
     
     print("実行には画像ファイルのパスが必要です。`main()`関数の呼び出し部分を修正してください。")

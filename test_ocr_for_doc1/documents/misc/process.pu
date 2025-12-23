@@ -1,0 +1,22 @@
+@startuml
+!theme plain
+skinparam backgroundColor white
+
+start
+:Load Invoice Image;
+note right: image_loader.py\nSupports PNG, JPG, TIFF
+
+:Preprocess Image;
+note right: preprocess.py\n- Skew correction\n- Noise removal\n- Document area detection
+
+:OCR Text Recognition;
+note right: ocr_recognizer.py\n- Tesseract engine\n- Japanese language support\n- Mixed text orientation
+
+:Parse and Extract Fields;
+note right: data_parser.py\n- Regex pattern matching\n- Field classification\n- Data structurization
+
+:Output JSON Result;
+note right: output_writer.py\n- JSON formatting\n- Error handling\n- File generation
+
+stop
+@enduml
