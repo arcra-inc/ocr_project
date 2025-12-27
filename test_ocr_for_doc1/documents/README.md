@@ -96,6 +96,26 @@ test_ocr_for_doc1/
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 ```
 
+## PDFファイルの準備
+
+PDFファイルをPNG画像に変換してOCR処理を行う場合は、プロジェクトルートの変換スクリプトを使用してください：
+
+```bash
+# プロジェクトルートに移動
+cd ..\..
+
+# PDF→PNG変換スクリプト実行
+python util\convert_pdf_to_png.py
+```
+
+このスクリプトは以下の機能を提供します：
+- PDFファイルの各ページをPNG画像に変換
+- 高解像度（300 DPI）でのOCR最適化
+- 処理対象ディレクトリの自動検出
+- エラーハンドリングと詳細な進捗表示
+
+変換された画像ファイルは`documents/images/test/`ディレクトリに保存され、OCR処理の対象となります。
+
 **テスト実行**
 Tesseract OCRの環境が正しくセットアップされているか確認するため、環境テストを実行します。
 ```bash

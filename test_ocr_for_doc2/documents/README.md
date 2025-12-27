@@ -98,7 +98,27 @@ pip install google-cloud-vision
 
 ## 使用方法
 
-### 1. 画像の準備
+### 1. PDFファイルの準備と変換
+
+PDFファイルをPNG画像に変換してからOCR処理を行います：
+
+```bash
+# プロジェクトルートに移動
+cd ..\..
+
+# PDF→PNG変換スクリプト実行
+python util\convert_pdf_to_png.py
+```
+
+このスクリプトは以下の機能を提供します：
+- PDFファイルの各ページをPNG画像に変換
+- 高解像度（300 DPI）でのOCR最適化
+- 処理対象ディレクトリの自動検出
+- エラーハンドリングと詳細な進捗表示
+
+変換された画像ファイルは`documents/images/pdf_pages/`ディレクトリに保存されます。
+
+### 2. 画像の準備
 画像を`documents/images/pdf_pages/`フォルダに配置：
 ```
 documents/
@@ -110,13 +130,13 @@ documents/
 └── ocr_txt/  # 出力先（自動作成）
 ```
 
-### 2. バッチOCR実行
+### 3. バッチOCR実行
 ```bash
 cd test_ocr_for_doc2
 python main.py
 ```
 
-### 3. ディレクトリパスの設定
+### 4. ディレクトリパスの設定
 必要に応じて`main.py`内のパスを変更：
 ```python
 images_dir = Path(r"C:\path\to\your\images")
