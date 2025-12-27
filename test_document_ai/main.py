@@ -57,7 +57,10 @@ def main(
     processor_id: str,
     location: str,
     exts: set,
-    service_account_key_path: Optional[str] = None
+    service_account_key_path: Optional[str] = None,
+    output_text: bool = True,
+    output_raw_json: bool = True, 
+    output_structured_json: bool = True
 ):
     """
     Document AI Form Parserを使用してOCR処理を実行
@@ -69,6 +72,9 @@ def main(
         location: Document AIのリージョン
         exts: 対象とする画像の拡張子セット
         service_account_key_path: サービスアカウントキーファイルのパス（オプション）
+        output_text: テキストファイル出力フラグ
+        output_raw_json: 生JSONファイル出力フラグ
+        output_structured_json: 構造化JSONファイル出力フラグ
     """
     if exts is None:
         exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf"}
@@ -110,26 +116,34 @@ def main(
             
             document, response_json = process_document_with_form_parser(client, project_id, processor_id, img_path, location)
             
-            # ピュアなJSONレスポンスを保存
-            json_file = output_dir / f"{img_path.stem}_raw_response.json"
-            json_file.write_text(json.dumps(response_json, ensure_ascii=False, indent=2), encoding="utf-8")
+            # 出力カウント
+            generated_files = []
             
-            # Form Parserの構造化データを抽出
-            form_parser_data = create_combined_structured_output(response_json)
+            # 1. テキストファイル出力（フラグ制御）
+            if output_text:
+                full_text = document.text if document.text else ""
+                text_file = output_dir / f"{img_path.stem}_text.txt"
+                text_file.write_text(full_text, encoding="utf-8")
+                generated_files.append(f"テキスト: {text_file.name} ({len(full_text)} 文字)")
             
-            # 構造化フィールドを保存（Form Parser版）
-            structured_file = output_dir / f"{img_path.stem}_structured_fields.json"
-            structured_file.write_text(json.dumps(form_parser_data, ensure_ascii=False, indent=2), encoding="utf-8")
+            # 2. 生JSONファイル出力（フラグ制御）
+            if output_raw_json:
+                json_file = output_dir / f"{img_path.stem}_raw_response.json"
+                json_file.write_text(json.dumps(response_json, ensure_ascii=False, indent=2), encoding="utf-8")
+                generated_files.append(f"生JSON: {json_file.name} ({json_file.stat().st_size} bytes)")
             
-            # 全文テキストを保存
-            full_text = document.text if document.text else ""
-            text_file = output_dir / f"{img_path.stem}_text.txt"
-            text_file.write_text(full_text, encoding="utf-8")
+            # 3. 構造化JSONファイル出力（フラグ制御）
+            if output_structured_json:
+                form_parser_data = create_combined_structured_output(response_json)
+                structured_file = output_dir / f"{img_path.stem}_structured_fields.json"
+                structured_file.write_text(json.dumps(form_parser_data, ensure_ascii=False, indent=2), encoding="utf-8")
+                generated_files.append(f"構造化JSON: {structured_file.name} (フィールド数: {len(form_parser_data)}個)")
             
-            print(f"[OK] {img_path.name} -> 3ファイル生成 (Form Parser - モデル側構造抽出)")
-            print(f"     テキスト: {text_file.name} ({len(full_text)} 文字)")
-            print(f"     ピュアJSON: {json_file.name} ({json_file.stat().st_size} bytes)")
-            print(f"     Form Parser構造化: {structured_file.name} (フォームフィールド: {form_parser_data.get('統計情報', {}).get('フォームフィールド統計', {}).get('総フィールド数', 0)}個)")
+            # 結果表示
+            file_count = len(generated_files)
+            print(f"[OK] {img_path.name} -> {file_count}ファイル生成")
+            for file_info in generated_files:
+                print(f"     {file_info}")
             ok += 1
             
         except Exception as e:
@@ -170,8 +184,8 @@ if __name__ == "__main__":
     images_dir = current_dir / "documents" / "images" / "test"
     output_dir = current_dir / "documents" / "ocr_results" / "test"
     
-    images_dir = current_dir / "documents" / "images" / "one_file"
-    output_dir = current_dir / "documents" / "ocr_results" / "one_file"
+    #images_dir = current_dir / "documents" / "images" / "one_file"
+    #output_dir = current_dir / "documents" / "ocr_results" / "one_file"
     
     # Document AIプロセッサの設定
     #processor_id = "1d1c870c661d0805"  # 実際のプロセッサID
@@ -188,6 +202,11 @@ if __name__ == "__main__":
     
     # 対象拡張子
     exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf"}
+    
+    # ===== 出力ファイル制御フラグ =====
+    output_text = False            # テキストファイル(.txt)出力
+    output_raw_json = False        # 生JSONファイル(.json)出力  
+    output_structured_json = True # 構造化JSONファイル(.json)出力
     # ===== 設定ここまで =====
     
     print("Document AI OCR処理を開始します")
@@ -195,6 +214,7 @@ if __name__ == "__main__":
     print(f"出力ディレクトリ: {output_dir}")
     print(f"プロセッサID: {processor_id}")
     print(f"処理モード: Form Parser (モデル側構造抽出 - パターンマッチング不使用)")
+    print(f"出力設定: テキスト={output_text}, 生JSON={output_raw_json}, 構造化JSON={output_structured_json}")
     print(f"画像ディレクトリ存在確認: {images_dir.exists()}")
     if service_account_key_path:
         print(f"認証方法: サービスアカウントキーファイル ({service_account_key_path})")
@@ -206,4 +226,5 @@ if __name__ == "__main__":
         print("main.pyの processor_id 変数を実際のDocument AIプロセッサIDに設定してください")
         exit(1)
     
-    main(images_dir, output_dir, processor_id, location, exts, service_account_key_path)
+    main(images_dir, output_dir, processor_id, location, exts, service_account_key_path, 
+            output_text, output_raw_json, output_structured_json)

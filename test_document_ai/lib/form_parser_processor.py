@@ -1,14 +1,13 @@
 """
-Form Parser Document AI処理モジュール
+Form Parser Document AI処理モジュール（簡素化版）
 
-Generic OCR ProcessorではなくForm Parserを使用して、
-Document AIのモデル側で構造化データを自動抽出します。
+Document AIのForm Parserを使用して、
+座標や信頼度を含まないシンプルなフィールド抽出を行います。
 """
 
 import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional
-from datetime import datetime
 import mimetypes
 
 from google.cloud import documentai_v1 as documentai
@@ -42,7 +41,6 @@ def setup_form_parser_client(location: str = "us", service_account_key_path: Opt
     else:
         # デフォルト認証を使用
         client = documentai.DocumentProcessorServiceClient()
-        # 環境変数からプロジェクトIDを取得する必要があります
         import os
         project_id = os.environ.get('GOOGLE_CLOUD_PROJECT')
         if not project_id:
@@ -102,27 +100,26 @@ def process_document_with_form_parser(
 
 def extract_form_fields_from_response(document_ai_response: Dict) -> Dict[str, Any]:
     """
-    Form ParserのレスポンスからformFieldsを抽出
+    Form ParserのレスポンスからformFieldsを抽出（簡素化版）
     
     Args:
         document_ai_response: Document AIのJSONレスポンス
         
     Returns:
-        Dict: 抽出されたフォームフィールド情報
+        Dict: 抽出されたフォームフィールド情報（フィールド名と値のみ）
     """
     document = document_ai_response.get("document", {})
     pages = document.get("pages", [])
     
     if not pages:
-        return {"error": "No pages found"}
+        return {}
     
     # フォームフィールドを抽出
-    extracted_fields = {}
+    all_fields = {}
     
     for page_idx, page in enumerate(pages):
         form_fields = page.get("formFields", [])
         
-        page_fields = {}
         for field_idx, form_field in enumerate(form_fields):
             # フィールド名（ラベル）を取得
             field_name_layout = form_field.get("fieldName", {})
@@ -132,93 +129,80 @@ def extract_form_fields_from_response(document_ai_response: Dict) -> Dict[str, A
             field_name = _extract_text_from_layout(field_name_layout, document.get("text", ""))
             field_value = _extract_text_from_layout(field_value_layout, document.get("text", ""))
             
-            # 信頼度を取得
-            name_confidence = field_name_layout.get("confidence", 0.0)
-            value_confidence = field_value_layout.get("confidence", 0.0)
-            
-            # 座標を取得
-            name_coords = _extract_coordinates_from_layout(field_name_layout)
-            value_coords = _extract_coordinates_from_layout(field_value_layout)
-            
-            if field_name or field_value:
-                field_key = field_name if field_name else f"フィールド_{field_idx}"
-                page_fields[field_key] = {
-                    "フィールド名": field_name,
-                    "値": field_value,
-                    "フィールド名信頼度": round(name_confidence, 3),
-                    "値信頼度": round(value_confidence, 3),
-                    "フィールド名座標": name_coords,
-                    "値座標": value_coords,
-                    "検出方法": "Document AI Form Parser"
-                }
-        
-        if page_fields:
-            extracted_fields[f"ページ_{page_idx + 1}"] = page_fields
+            if field_name and field_value:
+                all_fields[field_name] = field_value
+            elif field_value and not field_name:
+                # フィールド名がない場合は番号で管理
+                all_fields[f"フィールド_{len(all_fields) + 1}"] = field_value
     
-    return {
-        "文書情報": {
-            "処理日時": datetime.now().isoformat(),
-            "ページ数": len(pages),
-            "全文字数": len(document.get("text", "")),
-            "処理方式": "Form Parser"
-        },
-        "抽出されたフォームフィールド": extracted_fields,
-        "統計情報": {
-            "総フィールド数": sum(len(fields) for fields in extracted_fields.values()),
-            "ページ別フィールド数": {page: len(fields) for page, fields in extracted_fields.items()}
-        }
-    }
+    return all_fields
 
 
 def extract_entities_from_response(document_ai_response: Dict) -> Dict[str, Any]:
     """
-    Document AIレスポンスからentitiesを抽出
+    Document AIレスポンスからentitiesを抽出（簡素化版）
     
     Args:
         document_ai_response: Document AIのJSONレスポンス
         
     Returns:
-        Dict: 抽出されたエンティティ情報
+        Dict: 抽出されたエンティティ情報（タイプと値のみ）
     """
     document = document_ai_response.get("document", {})
     entities = document.get("entities", [])
     
     if not entities:
-        return {"message": "No entities found"}
+        return {}
     
     extracted_entities = {}
     
     for entity in entities:
         entity_type = entity.get("type", "Unknown")
-        mention_text = entity.get("mentionText", "")
-        confidence = entity.get("confidence", 0.0)
+        mention_text = entity.get("mentionText", "").strip()
         
-        # 正規化値があれば取得
-        normalized_value = entity.get("normalizedValue", {})
-        
-        if entity_type not in extracted_entities:
-            extracted_entities[entity_type] = []
-        
-        entity_info = {
-            "テキスト": mention_text,
-            "信頼度": round(confidence, 3),
-            "検出方法": "Document AI Entity Extraction"
-        }
-        
-        # 正規化値がある場合は追加
-        if normalized_value:
-            entity_info["正規化値"] = normalized_value
-        
-        extracted_entities[entity_type].append(entity_info)
+        if mention_text:  # 空でないテキストのみ
+            if entity_type not in extracted_entities:
+                extracted_entities[entity_type] = []
+            
+            extracted_entities[entity_type].append(mention_text)
     
-    return {
-        "抽出されたエンティティ": extracted_entities,
-        "統計情報": {
-            "エンティティタイプ数": len(extracted_entities),
-            "総エンティティ数": sum(len(entities) for entities in extracted_entities.values()),
-            "エンティティタイプ一覧": list(extracted_entities.keys())
-        }
-    }
+    return extracted_entities
+
+
+def create_combined_structured_output(document_ai_response: Dict) -> Dict[str, Any]:
+    """
+    Form ParserとEntityの両方から情報を抽出して統合（簡素化版）
+    
+    Args:
+        document_ai_response: Document AIのJSONレスポンス
+        
+    Returns:
+        Dict: 統合された構造化データ（フィールドと値のみ）
+    """
+    # フォームフィールドを抽出
+    form_fields = extract_form_fields_from_response(document_ai_response)
+    
+    # エンティティを抽出
+    entities = extract_entities_from_response(document_ai_response)
+    
+    # 統合結果を作成（シンプル構造）
+    result = {}
+    
+    # フォームフィールドを追加
+    if form_fields:
+        result.update(form_fields)
+    
+    # エンティティを追加（重複しないように）
+    if entities:
+        for entity_type, entity_values in entities.items():
+            if entity_values:  # 空でないエンティティのみ
+                # 複数の値がある場合は配列、1つの場合は文字列
+                if len(entity_values) == 1:
+                    result[entity_type] = entity_values[0]
+                else:
+                    result[entity_type] = entity_values
+    
+    return result
 
 
 def _extract_text_from_layout(layout: Dict, full_text: str) -> str:
@@ -241,64 +225,7 @@ def _extract_text_from_layout(layout: Dict, full_text: str) -> str:
     return " ".join(extracted_texts)
 
 
-def _extract_coordinates_from_layout(layout: Dict) -> Dict:
-    """レイアウト情報から座標を抽出"""
-    bounding_poly = layout.get("boundingPoly", {})
-    normalized_vertices = bounding_poly.get("normalizedVertices", [])
-    
-    if not normalized_vertices:
-        return {}
-    
-    x_coords = [v.get("x", 0.0) for v in normalized_vertices if "x" in v]
-    y_coords = [v.get("y", 0.0) for v in normalized_vertices if "y" in v]
-    
-    if not x_coords or not y_coords:
-        return {}
-    
-    return {
-        "x_min": min(x_coords),
-        "y_min": min(y_coords),
-        "x_max": max(x_coords),
-        "y_max": max(y_coords),
-        "center_x": sum(x_coords) / len(x_coords),
-        "center_y": sum(y_coords) / len(y_coords)
-    }
-
-
-def create_combined_structured_output(document_ai_response: Dict) -> Dict[str, Any]:
-    """
-    Form ParserとEntityの両方から情報を抽出して統合
-    
-    Args:
-        document_ai_response: Document AIのJSONレスポンス
-        
-    Returns:
-        Dict: 統合された構造化データ
-    """
-    # フォームフィールドを抽出
-    form_fields_result = extract_form_fields_from_response(document_ai_response)
-    
-    # エンティティを抽出
-    entities_result = extract_entities_from_response(document_ai_response)
-    
-    # 統合結果を作成
-    combined_result = {
-        "文書情報": form_fields_result.get("文書情報", {}),
-        "Document AI抽出結果": {
-            "フォームフィールド": form_fields_result.get("抽出されたフォームフィールド", {}),
-            "エンティティ": entities_result.get("抽出されたエンティティ", {}),
-        },
-        "統計情報": {
-            "フォームフィールド統計": form_fields_result.get("統計情報", {}),
-            "エンティティ統計": entities_result.get("統計情報", {}),
-            "抽出方式": "Document AI Form Parser + Entity Extraction"
-        }
-    }
-    
-    return combined_result
-
-
 if __name__ == "__main__":
     # テスト実行
-    print("Form Parser Document AI処理モジュールのテスト")
+    print("Form Parser Document AI処理モジュール（簡素化版）のテスト")
     print("実際の処理にはForm ParserプロセッサIDが必要です")
