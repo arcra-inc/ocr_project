@@ -50,75 +50,6 @@ def setup_document_ai_client(
     return client, project_id
 
 
-def process_document_ocr(
-    client: documentai.DocumentProcessorServiceClient,
-    project_id: str,
-    processor_id: str,
-    file_path: Path,
-    location: str = "us"
-) -> tuple[documentai.Document, dict]:
-    """
-    Document AIを使用してOCR処理を実行
-    
-    Args:
-        client: Document AIクライアント
-        project_id: Google CloudプロジェクトID
-        processor_id: Document AIプロセッサID
-        file_path: 処理する画像ファイルのパス
-        location: Document AIのリージョン
-        
-    Returns:
-        tuple[Document, dict]: OCR処理結果とJSONレスポンス
-    """
-    # MIMEタイプを自動判定
-    mime_type, _ = mimetypes.guess_type(str(file_path))
-    if not mime_type:
-        # デフォルト設定
-        if file_path.suffix.lower() in ['.jpg', '.jpeg']:
-            mime_type = 'image/jpeg'
-        elif file_path.suffix.lower() == '.png':
-            mime_type = 'image/png'
-        else:
-            mime_type = 'application/octet-stream'
-    
-    # ファイルを読み込み
-    with open(file_path, "rb") as image_file:
-        image_content = image_file.read()
-    
-    # Document AIリクエストを作成
-    raw_document = documentai.RawDocument(content=image_content, mime_type=mime_type)
-    name = f"projects/{project_id}/locations/{location}/processors/{processor_id}"
-    request = documentai.ProcessRequest(name=name, raw_document=raw_document)
-    
-    # OCR処理を実行
-    response = client.process_document(request)
-    
-    # レスポンスをJSONに変換（protobuf → dict）
-    from google.protobuf.json_format import MessageToDict
-    response_json = MessageToDict(response._pb)
-    
-    return response.document, response_json
-
-
-def extract_text_by_blocks(document: documentai.Document) -> List[str]:
-    """
-    ドキュメントからブロック単位でテキストを抽出（現在は未使用）
-    """
-    full_text = document.text
-    blocks = []
-    
-    for page in document.pages:
-        for block in page.blocks:
-            block_text_parts = []
-            for segment in block.layout.text_anchor.text_segments:
-                text_part = full_text[segment.start_index:segment.end_index]
-                block_text_parts.append(text_part)
-            
-            if block_text_parts:
-                blocks.append("".join(block_text_parts))
-    
-    return blocks
-
 
 def main(
     images_dir: Path, 
@@ -126,20 +57,18 @@ def main(
     processor_id: str,
     location: str,
     exts: set,
-    service_account_key_path: Optional[str] = None,
-    use_form_parser: bool = False
+    service_account_key_path: Optional[str] = None
 ):
     """
-    Document AIを使用してOCR処理を実行
+    Document AI Form Parserを使用してOCR処理を実行
     
     Args:
         images_dir: 処理する画像ファイルが格納されているディレクトリ
         output_dir: OCR結果のテキストファイルを保存するディレクトリ  
-        processor_id: Document AIプロセッサID
+        processor_id: Document AI Form ParserプロセッサID
         location: Document AIのリージョン
         exts: 対象とする画像の拡張子セット
         service_account_key_path: サービスアカウントキーファイルのパス（オプション）
-        use_form_parser: Form Parserモードを使用するかどうか
     """
     if exts is None:
         exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf"}
@@ -176,53 +105,31 @@ def main(
         try:
             print(f"処理中: {img_path.name}")
             
-            if use_form_parser:
-                # Form Parserを使用してDocument AIのモデル側で構造抽出
-                from lib.form_parser_processor import process_document_with_form_parser, create_combined_structured_output
-                
-                document, response_json = process_document_with_form_parser(client, project_id, processor_id, img_path, location)
-                
-                # Form Parserの構造化データを抽出
-                form_parser_data = create_combined_structured_output(response_json)
-                
-                # 構造化フィールドを保存（Form Parser版）
-                structured_file = output_dir / f"{img_path.stem}_structured_fields.json"
-                structured_file.write_text(json.dumps(form_parser_data, ensure_ascii=False, indent=2), encoding="utf-8")
-                
-                print(f"[OK] {img_path.name} -> 3ファイル生成 (Form Parser)")
-                print(f"     テキスト: {img_path.stem}_text.txt ({len(document.text)} 文字)")
-                print(f"     ピュアJSON: {img_path.stem}_raw_response.json ({len(json.dumps(response_json))} bytes)")
-                print(f"     Form Parser構造化: {structured_file.name} (フォームフィールド: {form_parser_data.get('統計情報', {}).get('フォームフィールド統計', {}).get('総フィールド数', 0)}個)")
-                
-            else:
-                # Generic OCR + スマートフィールド抽出（パターンマッチング）
-                document, response_json = process_document_ocr(client, project_id, processor_id, img_path, location)
-                
-                # スマートフィールド抽出（事前定義なしでDocument AIレスポンスから自動抽出）
-                from lib.smart_field_extractor import SmartFieldExtractor
-                smart_extractor = SmartFieldExtractor()
-                smart_structured_data = smart_extractor.extract_smart_fields(response_json)
-                
-                # 構造化フィールドを保存（スマート抽出版）
-                structured_file = output_dir / f"{img_path.stem}_structured_fields.json"
-                structured_file.write_text(json.dumps(smart_structured_data, ensure_ascii=False, indent=2), encoding="utf-8")
-                
-                print(f"[OK] {img_path.name} -> 3ファイル生成 (Generic OCR + Smart Pattern)")
-                print(f"     テキスト: {img_path.stem}_text.txt ({len(document.text)} 文字)")
-                print(f"     ピュアJSON: {img_path.stem}_raw_response.json ({len(json.dumps(response_json))} bytes)")
-                print(f"     スマート構造化: {structured_file.name} (フィールド数: {len(smart_structured_data.get('抽出されたフィールド', {}))})")
+            # Form Parserを使用してDocument AIのモデル側で構造抽出（パターンマッチング不使用）
+            from lib.form_parser_processor import process_document_with_form_parser, create_combined_structured_output
             
-            # 共通処理：ピュアなJSONレスポンスとテキストファイルを保存
+            document, response_json = process_document_with_form_parser(client, project_id, processor_id, img_path, location)
+            
+            # ピュアなJSONレスポンスを保存
             json_file = output_dir / f"{img_path.stem}_raw_response.json"
             json_file.write_text(json.dumps(response_json, ensure_ascii=False, indent=2), encoding="utf-8")
             
+            # Form Parserの構造化データを抽出
+            form_parser_data = create_combined_structured_output(response_json)
+            
+            # 構造化フィールドを保存（Form Parser版）
+            structured_file = output_dir / f"{img_path.stem}_structured_fields.json"
+            structured_file.write_text(json.dumps(form_parser_data, ensure_ascii=False, indent=2), encoding="utf-8")
+            
+            # 全文テキストを保存
             full_text = document.text if document.text else ""
             text_file = output_dir / f"{img_path.stem}_text.txt"
             text_file.write_text(full_text, encoding="utf-8")
+            
+            print(f"[OK] {img_path.name} -> 3ファイル生成 (Form Parser - モデル側構造抽出)")
             print(f"     テキスト: {text_file.name} ({len(full_text)} 文字)")
             print(f"     ピュアJSON: {json_file.name} ({json_file.stat().st_size} bytes)")
-            print(f"     スマート構造化: {structured_file.name} (フィールド数: {len(smart_structured_data.get('抽出されたフィールド', {}))})")
-            print(f"     テキスト: {text_file.name} ({len(full_text)} chars)")
+            print(f"     Form Parser構造化: {structured_file.name} (フォームフィールド: {form_parser_data.get('統計情報', {}).get('フォームフィールド統計', {}).get('総フィールド数', 0)}個)")
             ok += 1
             
         except Exception as e:
@@ -281,19 +188,13 @@ if __name__ == "__main__":
     
     # 対象拡張子
     exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf"}
-    
-    # ===== 処理モード設定 =====
-    # Form Parserモードを使用する場合はTrueに変更
-    # True: Document AIのForm Parserでモデル側構造抽出
-    # False: Generic OCR + パターンマッチング抽出
-    use_form_parser = False  # Form Parserプロセッサを使用する場合はTrueに変更
     # ===== 設定ここまで =====
     
     print("Document AI OCR処理を開始します")
     print(f"画像ディレクトリ: {images_dir}")
     print(f"出力ディレクトリ: {output_dir}")
     print(f"プロセッサID: {processor_id}")
-    print(f"処理モード: {'Form Parser (モデル側構造抽出)' if use_form_parser else 'Generic OCR + パターンマッチング'}")
+    print(f"処理モード: Form Parser (モデル側構造抽出 - パターンマッチング不使用)")
     print(f"画像ディレクトリ存在確認: {images_dir.exists()}")
     if service_account_key_path:
         print(f"認証方法: サービスアカウントキーファイル ({service_account_key_path})")
@@ -305,4 +206,4 @@ if __name__ == "__main__":
         print("main.pyの processor_id 変数を実際のDocument AIプロセッサIDに設定してください")
         exit(1)
     
-    main(images_dir, output_dir, processor_id, location, exts, service_account_key_path, use_form_parser)
+    main(images_dir, output_dir, processor_id, location, exts, service_account_key_path)

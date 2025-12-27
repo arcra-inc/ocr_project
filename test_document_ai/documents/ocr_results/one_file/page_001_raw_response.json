@@ -12999,7 +12999,7 @@
         "visualElements": [
           {
             "layout": {
-              "confidence": 0.39938366,
+              "confidence": 0.39938354,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13087,7 +13087,7 @@
           },
           {
             "layout": {
-              "confidence": 0.34504804,
+              "confidence": 0.3450481,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13131,7 +13131,7 @@
           },
           {
             "layout": {
-              "confidence": 0.22641528,
+              "confidence": 0.22641543,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13175,7 +13175,7 @@
           },
           {
             "layout": {
-              "confidence": 0.20714307,
+              "confidence": 0.20714314,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13219,7 +13219,7 @@
           },
           {
             "layout": {
-              "confidence": 0.19612479,
+              "confidence": 0.19612475,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13263,7 +13263,7 @@
           },
           {
             "layout": {
-              "confidence": 0.18007928,
+              "confidence": 0.18007916,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13307,7 +13307,7 @@
           },
           {
             "layout": {
-              "confidence": 0.1679004,
+              "confidence": 0.16790044,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13351,7 +13351,7 @@
           },
           {
             "layout": {
-              "confidence": 0.16639842,
+              "confidence": 0.16639851,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13439,7 +13439,7 @@
           },
           {
             "layout": {
-              "confidence": 0.15777767,
+              "confidence": 0.1577778,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13527,7 +13527,7 @@
           },
           {
             "layout": {
-              "confidence": 0.15184264,
+              "confidence": 0.1518427,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13571,7 +13571,7 @@
           },
           {
             "layout": {
-              "confidence": 0.14659859,
+              "confidence": 0.14659849,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13615,7 +13615,7 @@
           },
           {
             "layout": {
-              "confidence": 0.13581827,
+              "confidence": 0.13581821,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13659,7 +13659,7 @@
           },
           {
             "layout": {
-              "confidence": 0.12964126,
+              "confidence": 0.1296413,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13703,7 +13703,7 @@
           },
           {
             "layout": {
-              "confidence": 0.11696432,
+              "confidence": 0.1169644,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -13747,7 +13747,7 @@
           },
           {
             "layout": {
-              "confidence": 0.10971718,
+              "confidence": 0.10971717,
               "boundingPoly": {
                 "vertices": [
                   {
@@ -14115,7 +14115,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9657098,
+                      "confidence": 0.96570975,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14169,7 +14169,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9662844,
+                      "confidence": 0.96628433,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14223,7 +14223,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9634464,
+                      "confidence": 0.96344614,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14283,7 +14283,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9834894,
+                      "confidence": 0.9834895,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14330,7 +14330,7 @@
                   {
                     "layout": {
                       "textAnchor": {},
-                      "confidence": 0.984064,
+                      "confidence": 0.9840641,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14384,7 +14384,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.98122597,
+                      "confidence": 0.98122585,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14442,7 +14442,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9842105,
+                      "confidence": 0.98421055,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14496,7 +14496,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9847851,
+                      "confidence": 0.98478514,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14550,7 +14550,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.981947,
+                      "confidence": 0.98194695,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14608,7 +14608,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.9801729,
+                      "confidence": 0.980173,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14662,7 +14662,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.98074746,
+                      "confidence": 0.9807476,
                       "boundingPoly": {
                         "vertices": [
                           {
@@ -14716,7 +14716,7 @@
                           }
                         ]
                       },
-                      "confidence": 0.97790945,
+                      "confidence": 0.9779093,
                       "boundingPoly": {
                         "vertices": [
                           {
