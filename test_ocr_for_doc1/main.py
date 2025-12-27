@@ -16,10 +16,11 @@ def main(image_path):
         original_image = image_loader.load_image(image_path)
         print(f"画像を読み込みました: {image_path}")
 
-        # 1. OpenCVによる傾き補正
+        # 1. OpenCVによる前処理（傾き補正・射影変換）
         preprocessor = Preprocessor()
-        corrected_image = preprocessor.correct_skew(original_image)
-        print("傾き補正処理を完了しました。")
+        preprocess_result = preprocessor.process_one(original_image)
+        corrected_image = preprocess_result.transformed
+        print("前処理（傾き補正・射影変換）を完了しました。")
         
         # 2. TesseractによるOCR文字認識
         ocr_recognizer = OCRRecognizer()
@@ -57,7 +58,5 @@ if __name__ == "__main__":
     # そのパスを指定してください。
     
     # 例:
-    sample_image_path = os.path.join(os.path.dirname(__file__), 'documents', 'images', 'sample.png')
+    sample_image_path = os.path.join(os.path.dirname(__file__), 'documents', 'images/test', 'sample_invoice.png')
     main(sample_image_path)
-    
-    print("実行には画像ファイルのパスが必要です。`main()`関数の呼び出し部分を修正してください。")

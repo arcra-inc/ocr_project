@@ -141,12 +141,44 @@ Tesseract OCR 環境確認
 Tesseract OCRを使用する準備ができています。
 ============================================================
 ```
+次に，
+```bash
+cd test_ocr_for_doc1
+python lib/ocr_recognizer.py
+```
+以下のような結果が出力されれば成功です．
 
+```
+(ocr_env) PS C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc1> python .\lib\ocr_recognizer.py
+OCR処理を実行します...
+Looking for image at: C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc1\documents\images\sample\sample.png
+File exists: True
+日本語でOCR処理を実行しました。
+Recognized Text:
+吾 輝 は 猛 で あ る 。 名 前 は ま だ 無 い 。
+
+ど ご で 生 れ た か と ん と 見 当 が つ か ぬ 。 何 で も 薬 暇 い じ め じ め し た 所 で ニ ャ ー ニ ャ ー 泣 い て
+い た 事 だ け は 記 憾 し て い る 。 吾 璽 は こ こ で 始 め て 人 間 と い う も の を 見 た 。 し か も あ と で 聞 く
+と そ れ は 書 生 と い う 人 間 中 で 一 番 猛 悪 な 種 族 で あ っ た そ う だ 。 こ の 書 生 と い う の は 時 々 我 々
+を 捕 え て 燕 て 食 う と い う 話 で あ る 。 し か し そ の 当 時 は 何 と い う 考 ち な か っ た か ら 別 段 恐 し い
+と も 思 わ な か っ た 。 た だ 彼 の 掌 に 載 せ ら れ て ス ー と 持 ち 上 げ ら れ た 時 何 だ か フ ワ フ ワ し た 感
+
+じ が あ っ た だ ば か り で あ る 。 掌 の 上 で 少 し 煙 ち つ い て 書 生 の 顔 を 見 た の が い わ ゆ る 人 間 と い う
+
+も の の 見 始 で あ ろ う 。 ご の 時 妙 な も の だ と 思 っ た 感 じ が タ で も 残 っ て い る 。 第 一 毛 を ち っ て
+装 飾 さ れ ぺ べ き は ず の 顔 が つ る つ る し て ま る で 荒 缶 だ 。 そ の 後 猪 に も だ い ぶ 逢 っ た が こ ん な 片
+輪 に は 一 度 も 出 会 わ し た 事 が な い 。 の み な ら ず 願 の 真 中 が あ ま り に 突 起 し て い る 。 そ う し て
+そ の 穴 の 中 か ら 時 々 ぷ う ぶ う と 煙 を 吹 く 。 ど う も 咽 せ ぽ く て 実 に 弱 っ た 。 こ れ が 人 間 の 飲 む
+煙 草 と い う も の で あ る 事 は よ う や く こ の 頃 知 っ た 。
+
+
+(ocr_env) PS C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc1>
+```
 
 ## 実行
 
 ### 1. 画像の準備
-- 帳票画像を`documents/images/`フォルダに配置
+- 帳票画像を`documents/images/`フォルダに配置してあること．（メインのREADME参照）
 - 推奨フォーマット: PNG（300DPI以上）
 
 ### 2. メイン処理の実行

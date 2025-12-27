@@ -219,10 +219,18 @@ class Preprocessor:
 # ----------------------------
 if __name__ == "__main__":
     import sys
+    from pathlib import Path
     from image_loader import ImageLoader  # ユーザのモジュールを想定
 
+    # 現在のファイル位置から相対パスを計算
+    current_dir = Path(__file__).parent
+    test_imagefile_path = current_dir.parent / "documents" / "images" / "sample" / "sample.png"
+    
+    print(f"Looking for image at: {test_imagefile_path}")
+    print(f"File exists: {test_imagefile_path.exists()}")
+
     loader = ImageLoader()
-    img = loader.load_image('./temptest/image2.png')
+    img = loader.load_image(str(test_imagefile_path))
     if img is None:
         print("image load failed")
         sys.exit(1)

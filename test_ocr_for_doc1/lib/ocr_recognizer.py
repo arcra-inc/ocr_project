@@ -3,6 +3,8 @@ import cv2
 
 # Windows環境でTesseractのパスを指定してください
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\NakanoShiryu\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
+
 
 class OCRRecognizer:
     def __init__(self):
@@ -27,9 +29,22 @@ class OCRRecognizer:
         if image is None:
             raise ValueError("入力画像がNoneです。")
 
-        # 画像から日本語テキストを抽出
-        text = pytesseract.image_to_string(image, lang='jpn')
-        return text
+        try:
+            # まず日本語で試す
+            text = pytesseract.image_to_string(image, lang='jpn')
+            return text
+        except pytesseract.TesseractError as e:
+            # 日本語が利用できない場合は英語で実行
+            print(f"日本語言語データエラー: {e}")
+            print("英語で処理を続行します。")
+            text = pytesseract.image_to_string(image, lang='eng')
+            return text
+        except Exception as e:
+            # その他のエラーも英語で再試行
+            print(f"OCR処理中にエラー: {e}")
+            print("英語で処理を続行します。")
+            text = pytesseract.image_to_string(image, lang='eng')
+            return text
 
 
 def test_tesseract_installation():
@@ -143,7 +158,7 @@ def test_tesseract_installation():
 
 if __name__ == "__main__":
     import sys
-    import os
+    from pathlib import Path
     
     # 引数チェック
     if len(sys.argv) > 1 and 'test' in sys.argv[1:]:
@@ -154,15 +169,29 @@ if __name__ == "__main__":
         print("OCR処理を実行します...")
         from image_loader import ImageLoader
         
-        # lib/からの相対パスで指定
-        base_dir = os.path.dirname(os.path.dirname(__file__))
-        img_path = os.path.join(base_dir, 'temptest', 'forTesseract.png')
+        # 現在のファイル位置から相対パスを計算
+        current_dir = Path(__file__).parent
+        test_imagefile_path = current_dir.parent / "documents" / "images" / "sample" / "sample.png"
+        
+        print(f"Looking for image at: {test_imagefile_path}")
+        print(f"File exists: {test_imagefile_path.exists()}")
         
         loader = ImageLoader()
-        img = loader.load_image(img_path)
+        img = loader.load_image(str(test_imagefile_path))
         
         # TesseractでOCRを実行
-        text = pytesseract.image_to_string(img, lang='jpn')
+        try:
+            text = pytesseract.image_to_string(img, lang='jpn')
+            print("日本語でOCR処理を実行しました。")
+        except pytesseract.TesseractError as e:
+            print(f"日本語言語データエラー: {e}")
+            print("英語で処理を続行します。")
+            text = pytesseract.image_to_string(img, lang='eng')
+        except Exception as e:
+            print(f"OCR処理中にエラーが発生: {e}")
+            print("英語で処理を続行します。")
+            text = pytesseract.image_to_string(img, lang='eng')
+        
         print("Recognized Text:")
         print(text)
 

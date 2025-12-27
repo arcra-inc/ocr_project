@@ -33,19 +33,18 @@ def ocr_image_to_text(client: vision.ImageAnnotatorClient, image_path: Path) -> 
     return ann.text if ann and ann.text else ""
 
 
-def main():
-    # ===== 設定ここから =====
-    images_dir = Path(
-        r"C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc2\documents\images\pdf_pages"
-    )
-    output_txt_dir = Path(
-        r"C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc2\documents\ocr_txt"
-    )
-
-    # 対象拡張子（必要なら追加）
-    exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
-    # ===== 設定ここまで =====
-
+def main(images_dir: Path, output_txt_dir: Path, exts: set = None):
+    """
+    Google Vision APIを使用してOCR処理を実行
+    
+    Args:
+        images_dir: 画像ファイルが格納されているディレクトリ
+        output_txt_dir: OCR結果のテキストファイルを保存するディレクトリ
+        exts: 対象とする画像の拡張子セット（デフォルト: {".png", ".jpg", ".jpeg", ".tif", ".tiff"}）
+    """
+    if exts is None:
+        exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+    
     if not images_dir.exists():
         raise FileNotFoundError(f"images_dir not found: {images_dir}")
 
@@ -71,7 +70,6 @@ def main():
             text = ocr_image_to_text(client, img_path)
 
             out_txt = output_txt_dir / f"{img_path.stem}.txt"
-            # UTF-8で保存（日本語OK）。Windowsメモ帳互換なら 'utf-8-sig' も可
             out_txt.write_text(text, encoding="utf-8")
 
             print(f"[OK] {img_path.name} -> {out_txt.name} ({len(text)} chars)")
@@ -84,4 +82,18 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+
+    current_dir = Path(__file__).parent
+    images_dir = current_dir / "documents" / "images" / "sample" 
+    output_txt_dir = current_dir / "documents" / "output_txt" / "sample" 
+    
+    # 対象とする拡張子
+    # このスクリプトは指定したディレクトリ以下にある指定拡張子のファイルをすべて処理します
+    exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+    # ===== 設定ここまで =====
+    
+    print(f"画像ディレクトリ: {images_dir}")
+    print(f"出力ディレクトリ: {output_txt_dir}")
+    print(f"画像ディレクトリ存在確認: {images_dir.exists()}")
+    
+    main(images_dir, output_txt_dir, exts)
