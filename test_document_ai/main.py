@@ -204,8 +204,8 @@ if __name__ == "__main__":
     exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf"}
     
     # ===== 出力ファイル制御フラグ =====
-    output_text = False            # テキストファイル(.txt)出力
-    output_raw_json = False        # 生JSONファイル(.json)出力  
+    output_text = True            # テキストファイル(.txt)出力
+    output_raw_json = True        # 生JSONファイル(.json)出力  
     output_structured_json = True # 構造化JSONファイル(.json)出力
     # ===== 設定ここまで =====
     
