@@ -99,6 +99,8 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 ## PDFファイルの準備
 
 PDFファイルをPNG画像に変換してOCR処理を行う場合は、プロジェクトルートの変換スクリプトを使用してください：
+`./util/convert_pdf_to_png.py`
+の画像変換のパスを変更する
 
 ```bash
 # プロジェクトルートに移動
@@ -169,9 +171,9 @@ python lib/ocr_recognizer.py
 以下のような結果が出力されれば成功です．
 
 ```
-(ocr_env) PS C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc1> python .\lib\ocr_recognizer.py
+(ocr_env) PS C:\Users\...\ocr_project\test_ocr_for_doc1> python .\lib\ocr_recognizer.py
 OCR処理を実行します...
-Looking for image at: C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc1\documents\images\sample\sample.png
+Looking for image at: C:\Users\...\ocr_project\test_ocr_for_doc1\documents\images\sample\sample.png
 File exists: True
 日本語でOCR処理を実行しました。
 Recognized Text:
@@ -192,7 +194,7 @@ Recognized Text:
 煙 草 と い う も の で あ る 事 は よ う や く こ の 頃 知 っ た 。
 
 
-(ocr_env) PS C:\Users\NakanoShiryu\Documents\workspace\ocr_project\test_ocr_for_doc1>
+(ocr_env) PS C:\Users\...\ocr_project\test_ocr_for_doc1>
 ```
 ここまでで，実際にTessarct OCRの実行確認が完了です．
 

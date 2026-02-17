@@ -53,7 +53,7 @@ pip install -r requirements.txt
 
 以下のいずれかの方法で認証を設定：
 
-**方法A: Application Default Credentials（推奨）**
+**方法A: Application Default Credentials**
 ```bash
 gcloud auth application-default login
 ```

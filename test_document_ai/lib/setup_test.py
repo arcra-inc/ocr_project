@@ -158,7 +158,7 @@ if __name__ == "__main__":
     
     # サービスアカウントキーファイルのパス（オプション）
     # None に設定するとデフォルト認証（ADC）を使用します
-    service_account_key_path = Path(r"C:\Users\NakanoShiryu\Downloads\project-7ab97012-eca6-4d91-8e4-82f6cf52e321.json")
+    service_account_key_path = Path(r"C:\path\to\your\service-account-key.json")
     # 例: service_account_key_path = Path(r"C:\path\to\your\service-account-key.json")
     # ===== 設定ここまで =====
     

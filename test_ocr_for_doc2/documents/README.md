@@ -84,7 +84,7 @@ test_ocr_for_doc2/
 ```python
 def call_for_client():
     client = vision.ImageAnnotatorClient.from_service_account_file(
-        r"C:\path\to\your\service-account-key.json"  # ←実際のパス
+        r"C:\path\to\your\service-account-key.json"  # ←実際のパスに変更が必要
     )
     return client
 ```
@@ -101,6 +101,8 @@ pip install google-cloud-vision
 ### 1. PDFファイルの準備と変換
 
 PDFファイルをPNG画像に変換してからOCR処理を行います：
+`./util/convert_pdf_to_png.py`
+の画像変換のパスを変更する
 
 ```bash
 # プロジェクトルートに移動

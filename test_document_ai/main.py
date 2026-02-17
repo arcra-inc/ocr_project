@@ -164,7 +164,7 @@ if __name__ == "__main__":
         # デフォルト設定でセットアップテスト実行
         processor_id = "1d1c870c661d0805"  # 実際のプロセッサIDを設定
         location = "us"
-        service_account_key_path = Path(r"C:\Users\NakanoShiryu\Downloads\project-7ab97012-eca6-4d91-8e4-82f6cf52e321.json")
+        service_account_key_path = Path(r"C:\path\to\your\service-account-key.json")
         
         print("Document AI セットアップテストを実行します")
         print("設定を変更する場合は lib/setup_test.py を直接編集してください")
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     # service_account_key_path = None
     
     # オプション2: サービスアカウントキーファイルを使用
-    service_account_key_path = r"C:\Users\NakanoShiryu\Downloads\project-7ab97012-eca6-4d91-8e4-82f6cf52e321.json"
+    service_account_key_path = r"C:\path\to\your\service-account-key.json"
     
     # 対象拡張子
     exts = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".pdf"}
