@@ -2,7 +2,7 @@ ocr_env/
 __pycache__/
 
 tmp.md
-declare_key.py
-test_ocr_for_doc2/declare_key.py
 
 temp.md
+
+credential/

@@ -1,5 +1,11 @@
 import pytesseract
 import cv2
+import shutil
+
+# Mac環境
+# tesseract_path = shutil.which("tesseract")
+# if tesseract_path:
+#     pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 # Windows環境でTesseractのパスを指定してください
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -171,7 +177,7 @@ if __name__ == "__main__":
         
         # 現在のファイル位置から相対パスを計算
         current_dir = Path(__file__).parent
-        test_imagefile_path = current_dir.parent / "documents" / "images" / "sample" / "sample.png"
+        test_imagefile_path = current_dir.parent / "documents" / "images" / "test" / "test.png"
         
         print(f"Looking for image at: {test_imagefile_path}")
         print(f"File exists: {test_imagefile_path.exists()}")

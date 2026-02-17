@@ -84,12 +84,12 @@ def main(images_dir: Path, output_txt_dir: Path, exts: set = None):
 if __name__ == "__main__":
 
     current_dir = Path(__file__).parent
-    images_dir = current_dir / "documents" / "images" / "sample" 
-    output_txt_dir = current_dir / "documents" / "output_txt" / "sample" 
+    # images_dir = current_dir / "documents" / "images" / "sample" 
+    # output_txt_dir = current_dir / "documents" / "output_txt" / "sample" 
     
     # 帳票画像に適用したい場合は以下
-    #images_dir = current_dir / "documents" / "images" / "test" 
-    #output_txt_dir = current_dir / "documents" / "output_txt" / "test" 
+    images_dir = current_dir / "documents" / "images" / "test" 
+    output_txt_dir = current_dir / "documents" / "output_txt" / "test" 
     
     # 対象とする拡張子
     # このスクリプトは指定したディレクトリ以下にある指定拡張子のファイルをすべて処理します
